@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+*.env
+
+# IDE
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local testing
+streamlit/test_connection.py
+*.code-workspace
+data/raw/olist_geolocation_dataset.csv
+data/cleaned/geolocation_cleaned.csv
+
+# Large geolocation datasets
+data/raw/olist_geolocation_dataset.csv
+data/cleaned/geolocation_cleaned.csv
+
