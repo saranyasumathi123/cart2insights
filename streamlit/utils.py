@@ -1,4 +1,3 @@
-
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -25,6 +24,10 @@ def create_bar_chart(
     """
     Create a reusable bar chart.
     """
+
+    # Check whether data is available
+    if dataframe.empty:
+        return None
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
@@ -58,6 +61,10 @@ def create_line_chart(
     """
     Create a reusable line chart.
     """
+
+    # Check whether data is available
+    if dataframe.empty:
+        return None
 
     fig, ax = plt.subplots(figsize=(12, 5))
 

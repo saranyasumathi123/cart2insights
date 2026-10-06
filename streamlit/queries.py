@@ -1,185 +1,62 @@
 # =========================================================
-# BUSINESS OVERVIEW
+# BUSINESS OVERVIEW - TEST
 # =========================================================
 
-TOTAL_ORDERS_QUERY = """
-SELECT
-    COUNT(*) AS total_orders
-FROM orders;
-"""
+st.header("📊 Business Overview")
 
+total_orders = sales_data["order_id"].nunique()
+product_revenue = sales_data["price"].sum()
 
-TOTAL_REVENUE_QUERY = """
-SELECT
-    ROUND(SUM(price), 2) AS total_revenue
-FROM order_items;
-"""
+total_customers = sales_data["customer_id"].nunique()
+total_sellers = sales_data["seller_id"].nunique()
 
+average_order_value = product_revenue / total_orders
 
-TOTAL_CUSTOMERS_QUERY = """
-SELECT
-    COUNT(*) AS total_customers
-FROM customers;
-"""
+# TEST VALUES
+st.write("Orders =", total_orders)
+st.write("Product Revenue =", product_revenue)
+st.write("AOV =", average_order_value)
 
+st.write(
+    "Expected AOV =",
+    13215599.18 / 96439
+)
 
-TOTAL_SELLERS_QUERY = """
-SELECT
-    COUNT(*) AS total_sellers
-FROM sellers;
-"""
+kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
 
+kpi_card(
+    kpi1,
+    "📦 Total Orders",
+    format_number(total_orders),
+    "linear-gradient(135deg,#2563eb,#60a5fa)"
+)
 
-AVERAGE_ORDER_VALUE_QUERY = """
-SELECT
-    ROUND(
-        SUM(price) / COUNT(DISTINCT order_id),
-        2
-    ) AS average_order_value
-FROM order_items;
-"""
+kpi_card(
+    kpi2,
+    "💰 Product Revenue",
+    format_currency(product_revenue),
+    "linear-gradient(135deg,#059669,#34d399)"
+)
 
+kpi_card(
+    kpi3,
+    "👥 Customers",
+    format_number(total_customers),
+    "linear-gradient(135deg,#7c3aed,#a78bfa)"
+)
 
-# =========================================================
-# SALES ANALYSIS
-# =========================================================
+kpi_card(
+    kpi4,
+    "🏪 Sellers",
+    format_number(total_sellers),
+    "linear-gradient(135deg,#ea580c,#fb923c)"
+)
 
-MONTHLY_REVENUE_QUERY = """
-SELECT
-    DATE_FORMAT(
-        o.order_purchase_timestamp,
-        '%Y-%m'
-    ) AS month,
-    ROUND(
-        SUM(oi.price),
-        2
-    ) AS revenue
-FROM orders o
-JOIN order_items oi
-    ON o.order_id = oi.order_id
-GROUP BY month
-ORDER BY month;
-"""
-
-
-CATEGORY_REVENUE_QUERY = """
-SELECT
-    COALESCE(
-        t.product_category_name_english,
-        p.product_category_name,
-        'unknown'
-    ) AS category,
-    ROUND(
-        SUM(oi.price),
-        2
-    ) AS revenue
-FROM order_items oi
-JOIN products p
-    ON oi.product_id = p.product_id
-LEFT JOIN product_category_translation t
-    ON p.product_category_name =
-       t.product_category_name
-GROUP BY category
-ORDER BY revenue DESC;
-"""
-
-
-TOP_PRODUCTS_QUERY = """
-SELECT
-    oi.product_id,
-    COALESCE(
-        t.product_category_name_english,
-        p.product_category_name,
-        'unknown'
-    ) AS category,
-    COUNT(*) AS total_items,
-    ROUND(
-        SUM(oi.price),
-        2
-    ) AS revenue
-FROM order_items oi
-JOIN products p
-    ON oi.product_id = p.product_id
-LEFT JOIN product_category_translation t
-    ON p.product_category_name =
-       t.product_category_name
-GROUP BY
-    oi.product_id,
-    category
-ORDER BY revenue DESC
-LIMIT 10;
-"""
-
-
-# =========================================================
-# SELLER ANALYSIS
-# =========================================================
-
-TOP_SELLERS_QUERY = """
-SELECT
-    seller_id,
-    COUNT(DISTINCT order_id) AS total_orders,
-    COUNT(*) AS total_items,
-    ROUND(
-        SUM(price),
-        2
-    ) AS revenue
-FROM order_items
-GROUP BY seller_id
-ORDER BY revenue DESC
-LIMIT 10;
-"""
-
-
-# =========================================================
-# PAYMENT ANALYSIS
-# =========================================================
-
-PAYMENT_METHOD_QUERY = """
-SELECT
-    payment_type,
-    COUNT(DISTINCT order_id) AS total_orders,
-    ROUND(
-        SUM(payment_value),
-        2
-    ) AS total_value
-FROM order_payments
-GROUP BY payment_type
-ORDER BY total_orders DESC;
-"""
-
-
-# =========================================================
-# DELIVERY ANALYSIS
-# =========================================================
-
-DELIVERY_QUERY = """
-SELECT
-    CASE
-        WHEN order_delivered_customer_date
-             <= order_estimated_delivery_date
-        THEN 'On Time'
-        ELSE 'Delayed'
-    END AS delivery_status,
-
-    COUNT(*) AS orders,
-
-    ROUND(
-        AVG(
-            DATEDIFF(
-                order_delivered_customer_date,
-                order_purchase_timestamp
-            )
-        ),
-        2
-    ) AS average_delivery_days
-
-FROM orders
-
-WHERE order_delivered_customer_date IS NOT NULL
-  AND order_estimated_delivery_date IS NOT NULL
-
-GROUP BY delivery_status;
-"""
+kpi_card(
+    kpi5,
+    "🛒 Avg Order Value",
+    format_currency(average_order_value),
+    "linear-gradient(135deg,#db2777,#f472b6)"
+)
 
 
